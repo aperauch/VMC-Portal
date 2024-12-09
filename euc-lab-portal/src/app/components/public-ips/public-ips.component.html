@@ -1,0 +1,151 @@
+<h2>Public IP Management</h2>
+
+<clr-alert [(clrAlertClosed)]="hide_success_alert" [clrAlertType]="'success'">
+    <clr-alert-item>
+        <span class="alert-text">
+            {{ success_alert_message }}
+        </span>
+    </clr-alert-item>
+</clr-alert>
+
+<clr-alert [(clrAlertClosed)]="hide_general_alert" [clrAlertType]="'danger'">
+    <clr-alert-item>
+        <span class="alert-text">
+            {{ general_alert_message }}
+        </span>
+    </clr-alert-item>
+</clr-alert>
+
+<div class="clr-row">
+    <div class="clr-col-8">
+        <button class="btn btn-outline" type="button" (click)="requestPublicIP()">REQUEST PUBLIC IP</button>
+    </div>
+    <div class="clr-col clr-align-self-end">
+        <span>
+            <cds-form-group>
+                <cds-search>
+                    <label cds-layout="display:screen-reader-only">search</label>
+                    <input type="search" placeholder="Search for keywords" name="public_ip_display_name" [(ngModel)]="query" id="listSearch" autofocus />
+                </cds-search>
+            </cds-form-group>
+        </span>
+    </div>
+</div>
+
+<clr-datagrid [clrDgLoading]="loading">
+    <clr-dg-placeholder>We couldn't find any IP address reservations!</clr-dg-placeholder>
+    <clr-dg-column [clrDgField]="'ip'" [clrDgColType]="'string'" [clrDgSortBy]="publicIpComparator">
+        <ng-container>Public IP</ng-container>
+    </clr-dg-column>
+    <clr-dg-column [clrDgField]="'display_name'" [clrDgColType]="'string'">
+        <ng-container>Display Name</ng-container>
+    </clr-dg-column>
+    <clr-dg-column [clrDgField]="'id'" [clrDgColType]="'string'">
+        <ng-container>ID</ng-container>
+    </clr-dg-column>
+
+    <clr-dg-row *clrDgItems="let publicIP of publicIPs | searchFilter: query">
+        <clr-dg-action-overflow>
+            <!--<button class="action-item" (click)="showEditModal(publicIP)">Edit</button>-->
+            <button class="action-item" (click)="showDeleteModal(publicIP)">Release</button>
+        </clr-dg-action-overflow>
+
+        <clr-dg-cell>{{publicIP.ip}}</clr-dg-cell>
+        <clr-dg-cell>{{publicIP.display_name}}</clr-dg-cell>
+        <clr-dg-cell>{{publicIP.id}}</clr-dg-cell>
+    </clr-dg-row>
+
+    <clr-dg-footer>
+        <clr-dg-pagination #pagination [clrDgPageSize]="25">
+            <clr-dg-page-size [clrPageSizeOptions]="[25,50,75,100]">Records per page</clr-dg-page-size>
+            {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}}
+            of {{pagination.totalItems}} Records
+        </clr-dg-pagination>
+    </clr-dg-footer>
+</clr-datagrid>
+
+<clr-modal [(clrModalOpen)]="show_request_public_ip_form_modal" [clrModalClosable]="true"
+    id="request_public_ip_form_modal">
+    <h3 class="modal-title">Request a Public IP</h3>
+    <div class="modal-body">
+
+        <clr-alert [(clrAlertClosed)]="hide_request_public_ip_alert" [clrAlertType]="'danger'">
+            <clr-alert-item>
+                <span class="alert-text">
+                    {{ request_public_ip_alert_message }}
+                </span>
+            </clr-alert-item>
+        </clr-alert>
+
+        <form clrForm [formGroup]="request_public_ip_form">
+            <clr-input-container>
+                <label>Display Name</label>
+                <input clrInput type="text" placeholder="My-VMC-IP" name="public_ip_display_name"
+                    formControlName="display_name" required />
+                <clr-control-helper>Enter a name for the IP address to be request.</clr-control-helper>
+                <clr-control-error>A name must be provided.</clr-control-error>
+            </clr-input-container>
+        </form>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="cancelRequest()">CANCEL</button>
+        <button type="submit" class="btn btn-primary" (click)="submitRequest()">SUBMIT</button>
+    </div>
+</clr-modal>
+
+<clr-modal [clrModalSize]="'lg'" [(clrModalOpen)]="show_edit_modal" [clrModalClosable]="true" id="edit_modal">
+    <h3 class="modal-title">Edit Public IP Display Name</h3>
+    <div class="modal-body">
+
+        <clr-alert [(clrAlertClosed)]="hide_edit_public_ip_alert" [clrAlertType]="'danger'">
+            <clr-alert-item>
+                <span class="alert-text">
+                    {{ edit_public_ip_alert_message }}
+                </span>
+            </clr-alert-item>
+        </clr-alert>
+
+        <form clrForm [formGroup]="edit_public_ip_form">
+            <clr-input-container>
+                <label>Display Name</label>
+                <input clrInput type="text" name="public_ip_display_name" formControlName="display_name" required />
+                <clr-control-helper>Enter a name for the IP address to be request.</clr-control-helper>
+                <clr-control-error>A name must be provided.</clr-control-error>
+            </clr-input-container>
+            <clr-input-container>
+                <label>IP Address</label>
+                <input clrInput type="text" name="public_ip_address" formControlName="ip_address" disabled required />
+            </clr-input-container>
+            <clr-input-container>
+                <label>ID</label>
+                <input clrInput type="text" name="public_ip_id" formControlName="ip_id" disabled required />
+            </clr-input-container>
+        </form>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="cancelEdit()">CANCEL</button>
+        <button type="submit" class="btn btn-primary" (click)="saveEdit()">SAVE</button>
+    </div>
+</clr-modal>
+
+<clr-modal [(clrModalOpen)]="show_delete_modal" [clrModalClosable]="true" id="delete_modal">
+    <h3 class="modal-title">Release Public IP</h3>
+    <div class="modal-body">
+
+        <clr-alert [(clrAlertClosed)]="hide_delete_alert" [clrAlertType]="'danger'">
+            <clr-alert-item>
+                <span class="alert-text">
+                    {{ delete_alert_message }}
+                </span>
+            </clr-alert-item>
+        </clr-alert>
+
+        <p>Are you sure you want to release IP <b>{{ public_ip_address }} ({{ public_ip_display_name }})</b>?</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="cancelDelete()">CANCEL</button>
+        <button type="button" class="btn btn-danger" (click)="delete(public_ip_obj_to_delete)">CONFIRM</button>
+    </div>
+</clr-modal>

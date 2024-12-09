@@ -1,0 +1,146 @@
+<h2>NAT Rules Management</h2>
+
+<clr-alert [(clrAlertClosed)]="hide_success_alert" [clrAlertType]="'success'">
+    <clr-alert-item>
+        <span class="alert-text">
+            {{ success_alert_message }}
+        </span>
+    </clr-alert-item>
+</clr-alert>
+
+<clr-alert [(clrAlertClosed)]="hide_general_alert" [clrAlertType]="'danger'">
+    <clr-alert-item>
+        <span class="alert-text">
+            {{ general_alert_message }}
+        </span>
+    </clr-alert-item>
+</clr-alert>
+
+<clr-accordion>
+    <clr-accordion-panel>
+        <clr-accordion-title><b>Create a NAT Rule</b></clr-accordion-title>
+        <clr-accordion-content *clrIfExpanded>
+        <div cds-layout="grid gap:md cols:12">
+            <cds-placeholder>
+                <form [formGroup]="add_nat_rule_form">
+                    <cds-form-group layout="horizontal-inline">
+                        <cds-input>
+                            <label>Name</label>
+                            <input type="text" placeholder="My-NAT-Rule" formControlName="name" required />
+                            <cds-control-message>Enter a name for the NAT rule to be created.</cds-control-message>  
+                        </cds-input>
+                        <cds-input>
+                            <label>Public IP</label>
+                            <input type="text" placeholder="11.22.33.44" formControlName="publicIP" required />
+                            <cds-control-message>This IP will be translated to the given internal IP.</cds-control-message>
+                        </cds-input>
+                        <cds-input>
+                            <label>Internal IP</label>
+                            <input type="text" placeholder="10.100.68.X" formControlName="internalIP" required />
+                            <cds-control-message>The IP of the load balancer virtual server or internal server.</cds-control-message>
+                        </cds-input>
+                        <cds-toggle>
+                            <label>Enable Rule</label>
+                            <input type="checkbox" checked value="enabled" name="enabled" />
+                            <cds-control-message>Rule will be enabled by default.</cds-control-message>
+                        </cds-toggle>
+                        <cds-toggle>
+                            <label>Enable Logging</label>
+                            <input type="checkbox" value="logging" name="logging" />
+                        </cds-toggle>
+
+                        <button type="submit" class="btn btn-primary" (click)="submitRequest()" [disabled]="!add_nat_rule_form.valid">CREATE NAT RULE</button>
+
+                    </cds-form-group>
+                </form>
+            </cds-placeholder>
+        </div>
+    </clr-accordion-content>
+  </clr-accordion-panel>
+</clr-accordion>
+
+<div class="clr-row">
+    <div class="clr-col-8">
+    </div>
+    <div class="clr-col clr-align-self-end">
+        <span>
+            <cds-form-group>
+                <cds-search>
+                    <label cds-layout="display:screen-reader-only">search</label>
+                    <input type="search" placeholder="Search for keywords" name="nat_rule_name" [(ngModel)]="query" id="listSearch" autofocus />
+                </cds-search>
+            </cds-form-group>
+        </span>
+    </div>
+</div>
+
+<clr-datagrid [clrDgLoading]="loading">
+    <clr-dg-placeholder>We couldn't find any NAT rules!</clr-dg-placeholder>
+    <clr-dg-column [clrDgField]="'display_name'" [clrDgColType]="'string'">
+        <ng-container>Name</ng-container>
+    </clr-dg-column>
+    <clr-dg-column [clrDgField]="'translated_network'" [clrDgColType]="'string'" [clrDgSortBy]="natRuleComparator2">
+        <ng-container>Public IP</ng-container>
+    </clr-dg-column>
+    <clr-dg-column [clrDgField]="'source_network'" [clrDgColType]="'string'" [clrDgSortBy]="natRuleComparator">
+        <ng-container>Internal IP</ng-container>
+    </clr-dg-column>
+    <clr-dg-column [clrDgField]="'enabled'" [clrDgColType]="'string'">
+        <ng-container>Enabled</ng-container>
+    </clr-dg-column>
+    <clr-dg-column [clrDgField]="'logging'" [clrDgColType]="'string'">
+        <ng-container *clrDgHideableColumn="{hidden: true}">Logging</ng-container>
+    </clr-dg-column>
+    <clr-dg-column [clrDgField]="'tags'" [clrDgColType]="'string'">
+        <ng-container *clrDgHideableColumn="{hidden: true}">Tags</ng-container>
+    </clr-dg-column>
+    <clr-dg-column [clrDgField]="'firewall_match'" [clrDgColType]="'string'">
+        <ng-container *clrDgHideableColumn="{hidden: true}">Firewall Match</ng-container>
+    </clr-dg-column>
+    <clr-dg-column [clrDgField]="'id'" [clrDgColType]="'string'">
+        <ng-container>ID</ng-container>
+    </clr-dg-column>
+
+    <clr-dg-row *clrDgItems="let natRule of natRules | searchFilter: query">
+        <clr-dg-action-overflow>
+            <!--<button class="action-item" (click)="showEditModal(natRule)">Edit</button>-->
+            <button class="action-item" (click)="showDeleteModal(natRule)">Delete</button>
+        </clr-dg-action-overflow>
+
+        <clr-dg-cell>{{ natRule.display_name }}</clr-dg-cell>
+        <clr-dg-cell>{{ natRule.translated_network }}</clr-dg-cell>
+        <clr-dg-cell>{{ natRule.source_network }}</clr-dg-cell>
+        <clr-dg-cell>{{ natRule.enabled }}</clr-dg-cell>
+        <clr-dg-cell>{{ natRule.logging }}</clr-dg-cell>
+        <clr-dg-cell>{{ natRule.tags }}</clr-dg-cell>
+        <clr-dg-cell>{{ natRule.firewall_match }}</clr-dg-cell>
+        <clr-dg-cell>{{ natRule.id }}</clr-dg-cell>
+    </clr-dg-row>
+
+    <clr-dg-footer>
+        <clr-dg-pagination #pagination [clrDgPageSize]="25">
+            <clr-dg-page-size [clrPageSizeOptions]="[25,50,75,100]">Records per page</clr-dg-page-size>
+            {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}}
+            of {{pagination.totalItems}} Records
+        </clr-dg-pagination>
+    </clr-dg-footer>
+</clr-datagrid>
+
+<clr-modal [(clrModalOpen)]="show_delete_modal" [clrModalClosable]="true" id="delete_modal">
+    <h3 class="modal-title">Delete NAT Rule</h3>
+    <div class="modal-body">
+
+        <clr-alert [(clrAlertClosed)]="hide_delete_alert" [clrAlertType]="'danger'">
+            <clr-alert-item>
+                <span class="alert-text">
+                    {{ delete_alert_message }}
+                </span>
+            </clr-alert-item>
+        </clr-alert>
+        <p>Are you sure you want to delete the <b>{{ nat_rule_name }}</b> NAT rule?</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="cancelDelete()">CANCEL</button>
+        <button type="button" class="btn btn-danger" (click)="delete(nat_rule_obj_to_delete)">DELETE</button>
+    </div>
+</clr-modal>

@@ -1,0 +1,14 @@
+<div class="login-wrapper">
+    <form class="login">
+        <section class="title">
+            <h3 class="welcome">Welcome to the</h3>
+            EUC Lab Portal
+            <h5 class="hint">Login with your <b>VMware</b> account</h5>
+        </section>
+            <button type="submit" class="btn btn-primary" (click)="login()">LOGIN</button>
+    </form>
+</div>
+<div class="container">
+    <!--This is to avoid reload during acquireTokenSilent() because of hidden iframe -->
+    <router-outlet *ngIf="!isIframe"></router-outlet>
+</div>

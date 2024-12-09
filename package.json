@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@angular-devkit/schematics": "^15.0.1",
+    "@cds/angular": "^6.2.2",
+    "@cds/core": "^6.2.2"
+  }
+}

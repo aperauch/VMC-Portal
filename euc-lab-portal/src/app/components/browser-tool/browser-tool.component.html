@@ -1,0 +1,28 @@
+<div class="clr-row">
+    <div class="clr-col-12">
+      <div class="card">
+        <div class="card-header">
+          Browser Details
+        </div>
+        <div class="card-block">
+          <div class="card-text">
+            <ul class="list-group">
+            <h4>User-Agent String</h4>
+                <li class="list-group-item">
+                    <div>{{ user_agent_string }}</div>
+                </li>
+            
+            
+            <h4>Cookies</h4>
+                <li>{{ persistent_cookie_value }}</li>
+                <li>{{ session_cookie_value }}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary" (click)="setCookies()">Create Cookies</button>
+            <button class="btn btn" (click)="clearCookies()">Clear Cookies</button>
+        </div>
+      </div>
+    </div>
+  </div>

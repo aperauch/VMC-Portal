@@ -1,0 +1,162 @@
+<clr-alert [(clrAlertClosed)]="hide_alert" clrAlertType="{{ alert_type }}">
+  <clr-alert-item>
+      <span class="alert-text">
+          {{ alert_message }}
+      </span>
+  </clr-alert-item>
+</clr-alert>
+
+<div class="clr-row">
+  <div class="clr-col"></div>
+  <div class="clr-col"></div>
+  <div class="clr-col">
+    <clr-spinner *ngIf="loading">Loading ...</clr-spinner>
+  </div>
+  <div class="clr-col"></div>
+  <div class="clr-col"></div>
+</div>
+
+<div class="clr-row">
+  <div class="clr-col-lg-5 clr-col-md-4 clr-col-12">
+    <div class="card" *ngIf="show_welcome_card">
+      <div class="card-header">
+        Welcome!
+      </div>
+      <div class="card-block">
+        <div class="card-text">
+          <h5>Hi {{ profile?.givenName }},</h5>
+          <p>It looks like you don't have any accounts yet.  Click the button below to create them!</p>
+        </div>
+      </div>
+      <div class="card-footer">
+          <button class="btn btn-primary" (click)="createNewAccounts()">Create My Accounts</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<clr-modal [(clrModalOpen)]="show_reset_password_modal" *ngIf="show_reset_password_modal" [clrModalClosable]="true" id="reset_password_modal">
+  <h3 class="modal-title">Reset Password</h3>
+  <div class="modal-body">
+      <p>Are you sure you want to reset the password to your <b>{{ accountToReset.sAMAccountName }}</b> account?</p>
+      <br />
+      <p>This action will also enable and unlock your account.</p>
+  </div>
+  <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="cancelResetPassword()">CANCEL</button>
+      <button type="button" class="btn btn-danger"
+          (click)="resetAccountPassword(accountToReset)">CONFIRM</button>
+  </div>
+</clr-modal>
+
+<clr-modal [(clrModalOpen)]="show_new_accounts_modal" *ngIf="show_new_accounts_modal" [clrModalClosable]="true" id="new_accounts_modal">
+  <h3 class="modal-title">Your Lab Accounts Have Been Created</h3>
+  <div class="modal-body">
+      <p>Admin Username: <b>{{ newAdminAccount.sAMAccountName }}</b></p>
+      <p>Admin Password:  <b>{{ newAdminAccount.password }}</b></p>
+      <p>User Username: <b>{{ newUserAccount.sAMAccountName }}</b></p>
+      <p>User Password:  <b>{{ newUserAccount.password }}</b></p>
+  </div>
+  <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="closeNewAccountsModal()">
+        CLOSE
+      </button>
+  </div>
+</clr-modal>
+
+<clr-modal [(clrModalOpen)]="show_new_password_modal" *ngIf="show_new_password_modal" [clrModalClosable]="true" id="new_password_modal">
+  <h3 class="modal-title">Your Password Has Been Reset</h3>
+  <div class="modal-body">
+      <p>Username: <b>{{ account_with_new_password.sAMAccountName }}</b></p>
+      <p>Password:  <b>{{ account_with_new_password.password }}</b></p>
+  </div>
+  <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="closeNewPasswordModal()">
+        CLOSE
+      </button>
+  </div>
+</clr-modal>
+
+<div class="clr-row">
+  <div class="clr-col">
+    <div class="card" *ngIf="show_account_card">
+      <div class="card-header">
+        My User Account
+      </div>
+      <div class="card-block">
+        <div class="card-text">
+          <ul class="list-group">
+            <h4>Status Info</h4>
+            <li class="list-group-item">
+              <div>Account Status:  <span class="label {{ userStatusLabelStyle }}">{{ userAccount.status }}</span></div>
+              <div>LDAP Account Status Code:  {{ userAccount.userAccountControl }}</div>
+              <div>Bad Password Count:  {{ userAccount.badPwdCount }}</div>
+              <div>Bad Password Time:  {{ userAccount.badPasswordTime }}</div>
+              <div>Lockout Time:  {{ userAccount.lockoutTime }}</div>
+            </li>
+            <h4>Login Info</h4>
+            <li class="list-group-item">
+              <div>Domain:  {{ userAccount.domain }}</div>
+              <div>Username:  {{ userAccount.sAMAccountName }}</div>
+              <div>UPN: {{ userAccount.userPrincipalName }}</div>
+              <div>Account Type:  {{ userAccount.type }}</div>
+            </li>
+            <h4>Other</h4>
+            <li class="list-group-item">
+              <div>First Name:  {{ userAccount.givenName }}</div>
+              <div>Last Name:  {{ userAccount.sn }}</div>
+              <div>Email:  {{ userAccount.mail }}</div>
+              <div>Distinguished Name:  {{userAccount.distinguishedName }}</div>
+              <div>ObjectGUID:  {{ userAccount.objectGUID }}</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="card-footer">
+          <button class="btn btn-primary" (click)="unlockAccount(userAccount)">Enable and Unlock</button>
+          <button class="btn btn-warning-outline" (click)="showResetPasswordModal(userAccount)">Reset Password</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="clr-col">
+    <div class="card" *ngIf="show_account_card">
+      <div class="card-header">
+        My Admin Account
+      </div>
+      <div class="card-block">
+        <div class="card-text">
+          <ul class="list-group">
+            <h4>Status Info</h4>
+            <li class="list-group-item">
+              <div>Account Status:  <span class="label {{ adminStatusLabelStyle }}">{{ adminAccount.status }}</span></div>
+              <div>LDAP Account Status Code:  {{ adminAccount.userAccountControl }}</div>
+              <div>Bad Password Count:  {{ adminAccount.badPwdCount }}</div>
+              <div>Bad Password Time:  {{ adminAccount.badPasswordTime }}</div>
+              <div>Lockout Time:  {{ adminAccount.lockoutTime }}</div>
+            </li>
+            <h4>Login Info</h4>
+            <li class="list-group-item">
+              <div>Domain:  {{ adminAccount.domain }}</div>
+              <div>Username:  {{ adminAccount.sAMAccountName }}</div>
+              <div>UPN: {{ adminAccount.userPrincipalName }}</div>
+              <div>Account Type:  {{ adminAccount.type }}</div>
+            </li>
+            <h4>Other</h4>
+            <li class="list-group-item">
+              <div>First Name:  {{ adminAccount.givenName }}</div>
+              <div>Last Name:  {{ adminAccount.sn }}</div>
+              <div>Email:  {{ adminAccount.mail }}</div>
+              <div>Distinguished Name:  {{adminAccount.distinguishedName }}</div>
+              <div>ObjectGUID:  {{ adminAccount.objectGUID }}</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-primary" (click)="unlockAccount(adminAccount)">Enable and Unlock</button>
+          <button class="btn btn-warning-outline" (click)="showResetPasswordModal(adminAccount)">Reset Password</button>
+      </div>
+    </div>
+  </div>
+</div>

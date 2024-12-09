@@ -1,0 +1,36 @@
+{
+    "folders": [
+        {
+            "path": "./"
+        }
+    ],
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Launch Chrome",
+                "request": "launch",
+                "type": "pwa-chrome",
+                "url": "http://localhost:4200",
+                "webRoot": "${workspaceFolder}/euc-lab-portal"
+            },
+            {
+                "name": "Python: Flask",
+                "type": "python",
+                "request": "launch",
+                "module": "flask",
+                "env": {
+                    "FLASK_APP": "${workspaceFolder}/app/http/api/app.py",
+                    "FLASK_ENV": "development"
+                },
+                "args": [
+                    "run"
+                ],
+                "jinja": true
+            }
+        ]
+    },
+    "settings": {
+        "python.pythonPath": "/usr/local/bin/python3"
+    }
+}

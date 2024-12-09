@@ -1,0 +1,42 @@
+certifi==2021.10.8
+cffi==1.15.0
+charset-normalizer==2.0.9
+click==8.0.3
+cryptography==36.0.1
+Flask==2.0.2
+Flask-Cors==3.0.10
+httplib2==0.20.2
+idna==3.3
+itsdangerous==2.0.1
+Jinja2==3.0.3
+ldap3==2.9.1
+lxml==4.7.1
+MarkupSafe==2.0.1
+ns1-python==0.17.1
+nsx-policy-python-sdk @ file://localhost//private/var/folders/vb/4ffvd6r959xgc704x1fjmhy40000gp/T/pip-req-build-90amr29p/lib/nsx-policy-python-sdk/nsx_policy_python_sdk-3.1.3.2.0-py2.py3-none-any.whl
+nsx-python-sdk @ file://localhost//private/var/folders/vb/4ffvd6r959xgc704x1fjmhy40000gp/T/pip-req-build-90amr29p/lib/nsx-python-sdk/nsx_python_sdk-3.1.3.2.0-py2.py3-none-any.whl
+nsx-vmc-aws-integration-python-sdk @ file://localhost//private/var/folders/vb/4ffvd6r959xgc704x1fjmhy40000gp/T/pip-req-build-90amr29p/lib/nsx-vmc-aws-integration-python-sdk/nsx_vmc_aws_integration_python_sdk-3.1.3.2.0-py2.py3-none-any.whl
+nsx-vmc-policy-python-sdk @ file://localhost//private/var/folders/vb/4ffvd6r959xgc704x1fjmhy40000gp/T/pip-req-build-90amr29p/lib/nsx-vmc-policy-python-sdk/nsx_vmc_policy_python_sdk-3.1.3.2.0-py2.py3-none-any.whl
+oauth2client==4.1.3
+pyasn1==0.4.8
+pyasn1-modules==0.2.8
+pycparser==2.21
+PyJWT==1.4.2
+pyOpenSSL==21.0.0
+pyparsing==3.0.6
+python-http-client==3.3.4
+pyvmomi==7.0.3
+PyYAML==6.0
+requests==2.26.0
+rsa==4.8
+sendgrid==6.9.3
+six==1.16.0
+starkbank-ecdsa==2.0.3
+urllib3==1.26.7
+vapi-client-bindings @ file://localhost//private/var/folders/vb/4ffvd6r959xgc704x1fjmhy40000gp/T/pip-req-build-90amr29p/lib/vapi-client-bindings/vapi_client_bindings-3.7.0-py2.py3-none-any.whl
+vapi-common-client @ file://localhost//private/var/folders/vb/4ffvd6r959xgc704x1fjmhy40000gp/T/pip-req-build-90amr29p/lib/vapi-common-client/vapi_common_client-2.30.0-py2.py3-none-any.whl
+vapi-runtime @ file://localhost//private/var/folders/vb/4ffvd6r959xgc704x1fjmhy40000gp/T/pip-req-build-90amr29p/lib/vapi-runtime/vapi_runtime-2.30.0-py2.py3-none-any.whl
+vmc-client-bindings @ file://localhost//private/var/folders/vb/4ffvd6r959xgc704x1fjmhy40000gp/T/pip-req-build-90amr29p/lib/vmc-client-bindings/vmc_client_bindings-1.54.0-py2.py3-none-any.whl
+vmc-draas-client-bindings @ file://localhost//private/var/folders/vb/4ffvd6r959xgc704x1fjmhy40000gp/T/pip-req-build-90amr29p/lib/vmc-draas-client-bindings/vmc_draas_client_bindings-1.18.0-py2.py3-none-any.whl
+vSphere-Automation-SDK==1.71.0
+Werkzeug==2.0.2

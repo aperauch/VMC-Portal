@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "vmware-euc-pso-lab-portal": {
+      "hosting": {
+        "euc-lab-portal": [
+          "vmware-euc-pso-lab-portal"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "vmware-euc-pso-lab-portal"
+  }
+}

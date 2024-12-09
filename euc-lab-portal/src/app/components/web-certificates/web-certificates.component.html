@@ -1,0 +1,286 @@
+<h1>Web Certificates</h1>
+
+<button class="btn btn-outline" type="button" (click)="showCreateCertificateModal()">CREATE CERTIFICATE</button>
+
+<clr-alert [(clrAlertClosed)]="hide_success_alert" [clrAlertType]="'success'">
+  <clr-alert-item>
+    <span class="alert-text">
+      {{ success_alert_message }}
+    </span>
+  </clr-alert-item>
+</clr-alert>
+
+<clr-alert [(clrAlertClosed)]="hide_general_alert" [clrAlertType]="'danger'">
+  <clr-alert-item>
+    <span class="alert-text">
+      {{ general_alert_message }}
+    </span>
+  </clr-alert-item>
+</clr-alert>
+
+<clr-datagrid [clrDgLoading]="loading">
+  <clr-dg-column [clrDgField]="'cert.name'" [clrDgSortBy]="certificateComparator">
+    <ng-container>Certificate Name</ng-container>
+  </clr-dg-column>
+  <clr-dg-column>
+    <ng-container>Domains</ng-container>
+  </clr-dg-column>
+  <clr-dg-column>
+    <ng-container>Expiration</ng-container>
+  </clr-dg-column>
+  <clr-dg-column>
+    <ng-container>Status</ng-container>
+  </clr-dg-column>
+  <clr-dg-column>
+    <ng-container>Serial Number</ng-container>
+  </clr-dg-column>
+
+  <clr-dg-row *clrDgItems="let cert of certificates">
+    <clr-dg-action-overflow>
+      <button class="action-item" (click)="showRenewModal(cert)">Renew</button>
+      <button class="action-item" (click)="showRevokeModal(cert)">Revoke</button>
+      <button class="action-item" (click)="showDeleteModal(cert)">Delete</button>
+    </clr-dg-action-overflow>
+
+    <clr-dg-cell>{{ cert.name }}</clr-dg-cell>
+    <clr-dg-cell>{{ cert.domains }}</clr-dg-cell>
+    <clr-dg-cell>{{ cert.expiration }}</clr-dg-cell>
+    <clr-dg-cell>{{ cert.status }}</clr-dg-cell>
+    <clr-dg-cell>{{ cert.serialNumber }}</clr-dg-cell>
+  </clr-dg-row>
+
+  <clr-dg-footer>
+    <clr-dg-pagination #pagination [clrDgPageSize]="10">
+      <clr-dg-page-size [clrPageSizeOptions]="[10,25,50,100]">Records per page</clr-dg-page-size>
+      {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}}
+      of {{pagination.totalItems}} Records
+    </clr-dg-pagination>
+  </clr-dg-footer>
+</clr-datagrid>
+
+
+<clr-modal [clrModalSize]="'xl'" [(clrModalOpen)]="show_create_certificate_modal" [clrModalClosable]="true"
+  id="show_create_certificate_modal">
+  <h3 class="modal-title">Create a Certificate</h3>
+  <div class="modal-body">
+    <p>Create a short-lived (90 day) publicly trusted web certificated issued by <a href="https://letsencrypt.org/"><b>Let's Encrypt</b></a>.  Certificates can be renewed manually or automatically.</p>
+    <clr-alert [(clrAlertClosed)]="hide_create_certificate_alert" [clrAlertType]="'danger'">
+      <clr-alert-item>
+        <span class="alert-text">
+          {{ create_certificate_alert_message }}
+        </span>
+      </clr-alert-item>
+    </clr-alert>
+
+    <form clrForm [formGroup]="create_certificate_form">
+      <clr-input-container>
+        <label>Friendly Name</label>
+        <input clrInput type="text" placeholder="Certificate Name" formControlName="name" required />
+        <clr-control-helper>Enter a friendly name for the file to be created.  This does not affect the certificate subject values.</clr-control-helper>
+        <clr-control-error>A name must be provided.</clr-control-error>
+      </clr-input-container>
+      <clr-select-container>
+        <label>Domain Zone</label>
+        <select clrSelect name="zone_select" formControlName="zone" required>
+          <option value="euclab.net">euclab.net</option>
+          <option value="psolab.net">psolab.net</option>
+        </select>
+        <clr-control-helper>Create a certificate for this domain.</clr-control-helper>
+        <clr-control-error>A domain zone must be selected.</clr-control-error>
+      </clr-select-container>
+      <clr-input-container>
+        <label>Certificate Subject Domains</label>
+        <input clrInput type="text" placeholder="server, server1, server2" formControlName="domains" required />
+        <clr-control-helper>Enter a single value or a comma separated list of values for SANs.</clr-control-helper>
+        <clr-control-error>At least one domain must be provided as the certificate subject.</clr-control-error>
+      </clr-input-container>
+      <clr-select-container>
+        <label>Private Key Size</label>
+        <select clrSelect [(ngModel)]="keySize" formControlName="privateKeySize" required>
+          <option value="2048">2048</option>
+          <option value="4096">4096</option>
+        </select>
+        <clr-control-error>A key size must be provided.</clr-control-error>
+      </clr-select-container>
+      <clr-select-container>
+        <label>Seconds to Wait</label>
+        <select clrSelect [(ngModel)]="propationTimeInSeconds" formControlName="secondsToWait" required>
+          <option value="45">45</option>
+          <option value="60">60</option>
+          <option value="90">90</option>
+          <option value="120">120</option>
+        </select>
+        <clr-control-helper>The time to wait for NS1 DNS propation before validating.</clr-control-helper>
+        <clr-control-error>A value must be provided.</clr-control-error>
+      </clr-select-container>
+      <clr-password-container>
+        <label>Private Key Password</label>
+        <input clrPassword type="password" name="privateKeyPassword" formControlName="privateKeyPassword" required />
+        <clr-control-helper>Enter a password that will be used to protect the private key of the PFX certificate.</clr-control-helper>
+        <clr-control-error>A password must be provided.</clr-control-error>
+      </clr-password-container>
+      <clr-input-container>
+        <label>Email</label>
+        <input clrInput type="text" placeholder="jsmith@vmware.com" formControlName="email" />
+        <clr-control-helper>Enter an email to receive notifications about renewing this certificate.</clr-control-helper>
+      </clr-input-container>
+    </form>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline" (click)="cancelRequest()">CANCEL</button>
+    <button [clrLoading]="createCertButtonState" type="submit" class="btn btn-primary" (click)="submitRequest()">SUBMIT</button>
+  </div>
+</clr-modal>
+
+<clr-modal [clrModalSize]="'md'" [(clrModalOpen)]="show_renew_certificate_modal" [clrModalClosable]="true"
+  id="show_renew_certificate_modal">
+  <h3 class="modal-title">Renew a Certificate</h3>
+  <div class="modal-body">
+    <clr-alert [(clrAlertClosed)]="hide_renew_certificate_alert" [clrAlertType]="'danger'">
+      <clr-alert-item>
+        <span class="alert-text">
+          {{ renew_certificate_alert_message }}
+        </span>
+      </clr-alert-item>
+    </clr-alert>
+
+    <form clrForm [formGroup]="renew_certificate_form">
+      <clr-input-container>
+        <label>Certificate Name</label>
+        <input clrInput type="text"  formControlName="name" disabled required />
+      </clr-input-container>
+
+      <clr-password-container>
+        <label>Private Key Password</label>
+        <input clrPassword type="password" name="privateKeyPassword" formControlName="privateKeyPassword" required />
+        <clr-control-helper>Enter a new password that will be used to protect the private key of the PFX certificate.</clr-control-helper>
+        <clr-control-error>A password must be provided.</clr-control-error>
+      </clr-password-container>
+      <clr-toggle-container>
+        <label>Force Renewal</label>
+        <clr-toggle-wrapper>
+          <input type="checkbox" clrToggle formControlName="forceRenewal" />
+        </clr-toggle-wrapper>
+        <clr-control-helper>Force renewal for certificates that are valid for 31 days or more.</clr-control-helper>
+      </clr-toggle-container>
+    </form>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline" (click)="cancelRenewRequest()">CANCEL</button>
+    <button [clrLoading]="renewCertButtonState" type="button" class="btn btn-danger" (click)="submitRenewRequest()">RENEW</button>
+  </div>
+</clr-modal>
+
+<clr-modal [(clrModalOpen)]="show_revoke_certificate_modal" [clrModalClosable]="true">
+  <h3 class="modal-title">Revoke a Certificate</h3>
+  <div class="modal-body">
+    <clr-alert [(clrAlertClosed)]="hide_revoke_certificate_alert" [clrAlertType]="'danger'">
+      <clr-alert-item>
+        <span class="alert-text">
+          {{ revoke_certificate_alert_message }}
+        </span>
+      </clr-alert-item>
+    </clr-alert>
+    <div [innerHTML]=revoke_modal_body_message></div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline" (click)="cancelRevokeRequest()">CANCEL</button>
+    <button [clrLoading]="revokeCertButtonState" type="button" class="btn btn-danger" [disabled]="disableButton" (click)="submitRevokeRequest(certName)">REVOKE</button>
+  </div>
+</clr-modal>
+
+<clr-modal [(clrModalOpen)]="show_delete_certificate_modal" [clrModalClosable]="true">
+  <h3 class="modal-title">Delete a Certificate</h3>
+  <div class="modal-body">
+    <clr-alert [(clrAlertClosed)]="hide_delete_certificate_alert" [clrAlertType]="'danger'">
+      <clr-alert-item>
+        <span class="alert-text">
+          {{ delete_certificate_alert_message }}
+        </span>
+      </clr-alert-item>
+    </clr-alert>
+    <p>Are you sure you want to delete the <b>{{ certName }}</b> certificate?</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline" (click)="cancelDeleteRequest()">CANCEL</button>
+    <button [clrLoading]="deleteCertButtonState" type="button" class="btn btn-danger" (click)="submitDeleteRequest(certName)">DELETE</button>
+  </div>
+</clr-modal>
+
+
+<div class="clr-row">
+  <div class="clr-col-lg-4 clr-col-md-4 clr-col-sm-4 clr-col-12">
+    <div class="card">
+      <div class="card-header">
+        *.euclab.net
+      </div>
+      <div class="card-block">
+        <div class="card-title">
+          Wildcard Certificate
+        </div>
+        <div class="card-text">
+          <ul class="list">
+            <li>Owner: VMware</li>
+            <li>Issuer: Digicert</li>
+            <li>Expiration: 11/25/2023</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-sm btn-link"><a
+            href="https://portal.vmwarepso.org/downloads/certs/euclab-net/euclab_net.zip" download>Download</a></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="clr-col-lg-4 clr-col-md-4 clr-col-sm-4 clr-col-12">
+    <div class="card">
+      <div class="card-header">
+        *.psolab.net
+      </div>
+      <div class="card-block">
+        <div class="card-title">
+          Wildcard Certificate
+        </div>
+        <div class="card-text">
+          <ul class="list">
+            <li>Owner: VMware</li>
+            <li>Issuer: Digicert</li>
+            <li>Expiration: 11/25/2023</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-sm btn-link"><a
+            href="https://portal.vmwarepso.org/downloads/certs/psolab-net/psolab_net.zip" download>Download</a></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="clr-col-lg-4 clr-col-md-4 clr-col-sm-4 clr-col-12">
+    <div class="card">
+      <div class="card-header">
+        *.vmwarepso.org
+      </div>
+      <div class="card-block">
+        <div class="card-title">
+          Wildcard Certificate
+        </div>
+        <div class="card-text">
+          <ul class="list">
+            <li>Owner: Bob Barna</li>
+            <li>Issuer: Sectigo</li>
+            <li>Expiration: 11/4/2023</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-sm btn-link"><a
+            href="https://portal.vmwarepso.org/downloads/certs/vmwarepso-org/vmwarepso_org.zip"
+            download>Download</a></button>
+      </div>
+    </div>
+  </div>
+</div>

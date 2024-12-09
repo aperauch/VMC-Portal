@@ -1,0 +1,85 @@
+<clr-alert [(clrAlertClosed)]="hide_alert" clrAlertType="{{ alert_type }}">
+  <clr-alert-item>
+      <span class="alert-text">
+          {{ alert_message }}
+      </span>
+      <div class="alert-actions">
+        <a href="../#/accounts" class="alert-action" *ngif="show_account_details_link">View Account Details</a>
+      </div>
+  </clr-alert-item>
+</clr-alert>
+
+<div class="clr-row">
+  <div class="clr-col"></div>
+  <div class="clr-col"></div>
+  <div class="clr-col">
+    <clr-spinner *ngIf="loading">Loading ...</clr-spinner>
+  </div>
+  <div class="clr-col"></div>
+  <div class="clr-col"></div>
+</div>
+
+<div class="clr-row">
+  <div class="clr-col-12">
+    <div class="card" *ngIf="show_welcome_card">
+      <div class="card-header">
+        Welcome!
+      </div>
+      <div class="card-block">
+        <div class="card-text">
+          <h5>Hi {{ profile?.givenName }},</h5>
+          <p>It looks like you don't have any lab accounts yet.  You'll need a lab account to log into <a href="https://vdi.vmwarepso.org">vdi.vmwarepso.org</a> and the lab vCenter.</p>
+        </div>
+      </div>
+      <div class="card-footer">
+          <button class="btn btn-primary" [routerLink]="['./accounts']">Go to Accounts Dashboard</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="clr-row">
+  <div class="clr-col-12">
+    <div class="card" *ngIf="show_account_management_card">
+      <div class="card-header">
+        Account Management
+      </div>
+      <div class="card-block">
+        <div class="card-title">
+          Need help unlocking, enabling, or resetting the password for your lab accounts?
+        </div>
+        <div class="card-text">
+          <p>
+            Now your lab user and admin accounts can be managed from this <b><a href="../#/accounts">Accounts</a></b> page of this portal! 
+            Just in case this portal isn't working, you can always use the <a href="https://register.vmwarepso.org">Register</a> site to create your accounts and the <a href="https://password.vmwarepso.org">Password SSPR</a> to unlcok your accouints and reset your account passwords.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="clr-row">
+  <div class="clr-col-12">
+    <div class="card" *ngIf="show_getting_started_card">
+      <div class="card-header">
+        Getting Started
+      </div>
+      <div class="card-block">
+        <div class="card-title">
+          Use this tool to allow and manage public Internet access to your workloads by followings these steps:
+        </div>
+        <div class="card-text">
+          <ol class="list">
+              <li>Request a public IP for your workloads.</li>
+              <li>Create a public DNS record for your new IP using the psolab.net, euclab.net, or even your personal domain.</li>
+              <li>Create a NAT rule to map your public IP to a load balancer virtual IP (VIP) or the real IP of your target server.</li>
+              <li>Optionally, review the existing Compute Gateway (CGW) firewall rules to ensure application specific traffic is allowed.</li>
+              <li>Download a TLS web certificate for you application server if needed.</li>
+          </ol>
+          For more info, check-out the <a href="https://confluence.eng.vmware.com/pages/viewpage.action?spaceKey=PSOEUCNP&title=5.+PSO+Labs">PSO labs guide</a>!
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

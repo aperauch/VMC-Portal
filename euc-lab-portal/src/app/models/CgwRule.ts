@@ -1,0 +1,29 @@
+export class CgwRule {
+    revision: number;
+    _create_time: any;
+    _create_user: string;
+    _last_modified_time: any;
+    _last_modified_user: string;
+    _protection: string;
+    _system_owned: boolean;
+    display_name: string;
+    id: string;
+    resource_type: string;
+    parent_path: string;
+    path: string;
+    relative_path: string;
+    marked_for_delete: boolean;
+    destination_groups: string[];
+    destinations_excluded: boolean;
+    direction: string;
+    disabled: boolean;
+    ip_protocol: string;
+    logged: boolean;
+    profiles: string[];
+    scope: string[];
+    sequence_number: number;
+    services: string[];
+    source_groups: string[];
+    sources_excluded: boolean;
+    action: string;
+}

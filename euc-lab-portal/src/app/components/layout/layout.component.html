@@ -1,0 +1,67 @@
+<clr-main-container>
+    <clr-header class="header-6">
+        <div class="branding">
+            <a routerlink="/" routerLinkActive="active" class="logo-and-title">
+                <cds-icon shape="flask"></cds-icon>
+                <span class="title">EUC Lab Portal</span>
+            </a>
+        </div>
+
+        <div class="header-nav">
+            <a routerLink="./accounts" routerLinkActive="active" class="nav-link nav-text">My Lab Accounts</a>
+        </div>
+
+        <div class="header-actions header-actions--overflow">
+            
+            <button style="margin-top: 9pt" class="btn btn-inverse" *ngIf="!loginDisplay" (click)="login()">LOGIN</button>
+            
+            <clr-dropdown>
+                <button class="nav-text" clrDropdownTrigger aria-label="open user profile">
+                    {{ profile?.userPrincipalName }}
+                    <cds-icon shape="angle" direction="down"></cds-icon>
+                </button>
+                <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
+                    <a clrVerticalNavLink *ngIf="loginDisplay" (click)="logout()" style="color:black" clrDropdownItem>LOG OUT</a>
+                </clr-dropdown-menu>
+            </clr-dropdown>
+
+        </div>
+    </clr-header>
+    <nav class="subnav">
+        <ul class="nav">
+            <li class="nav-item">
+                <a routerLink="./publicips" routerLinkActive="active" class="nav-link">Public IPs</a>
+            </li>
+            <li class="nav-item">
+                <a routerLink="./dns" routerLinkActive="active" class="nav-link">Public DNS</a>
+            </li>
+            <li class="nav-item">
+                <a routerLink="./certificates" routerLinkActive="active" class="nav-link">Certificates</a>
+            </li>
+            <li class="nav-item">
+                <a routerLink="./natrules" routerLinkActive="active" class="nav-link">NAT Rules</a>
+            </li>
+            <li class="nav-item">
+                <a routerLink="./cgwrules" routerLinkActive="active" class="nav-link">CGW Rules</a>
+            </li>
+            <li class="nav-item">
+                <a routerLink="./browsertool" routerLinkActive="active" class="nav-link">Browser Tool</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="content-container">
+        <div class="content-area">
+            <clr-alert [(clrAlertClosed)]="hide_login_session_alert" [clrAlertType]="'danger'">
+                <clr-alert-item>
+                    <span class="alert-text">
+                        {{ login_session_error_message }}
+                    </span>
+                </clr-alert-item>
+            </clr-alert>
+            <div class="container">
+                <!--This is to avoid reload during acquireTokenSilent() because of hidden iframe -->
+                <router-outlet *ngIf="!isIframe"></router-outlet>
+            </div>
+        </div>
+    </div>
+</clr-main-container>
